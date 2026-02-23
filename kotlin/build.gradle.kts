@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
 	kotlin("jvm") version "2.1.10"
 	id("org.jetbrains.dokka") version "1.9.20"
@@ -18,8 +20,10 @@ dependencies {
 	testImplementation(project(":twitch4j"))
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-	kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
+kotlin {
+	compilerOptions {
+      jvmTarget.set(JvmTarget.JVM_1_8)
+	}
 }
 
 tasks.javadocJar {

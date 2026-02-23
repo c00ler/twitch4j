@@ -1,3 +1,6 @@
+import com.github.twitch4j.configureListDependencies
+import com.github.twitch4j.configureMetalava
+
 plugins {
 	id("com.gradleup.shadow")
 }
@@ -42,3 +45,6 @@ publishing.publications.withType<MavenPublication> {
 		description.set("Core dependency")
 	}
 }
+
+configureMetalava()
+configureListDependencies()

@@ -127,7 +127,7 @@ public class TwitchClientPool implements ITwitchClient {
     }
 
     /**
-     * Get Extensions
+     * @deprecated Get Extensions
      *
      * @return TwitchExtensions
      */
@@ -154,7 +154,7 @@ public class TwitchClientPool implements ITwitchClient {
     }
 
     /**
-     * Get Kraken
+     * @deprecated Get Kraken
      *
      * @return TwitchKraken
      */

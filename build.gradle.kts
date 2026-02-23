@@ -1,5 +1,7 @@
-import com.coditory.gradle.manifest.ManifestPluginExtension
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.twitch4j.configureDependencyReport
+import com.github.twitch4j.configureKtlint
+import com.github.twitch4j.configureKtlintApplyToIdea
 import io.freefair.gradle.plugins.lombok.LombokExtension
 import io.freefair.gradle.plugins.lombok.tasks.Delombok
 import me.champeau.jmh.JmhParameters
@@ -18,18 +20,12 @@ plugins {
 group = group
 version = version
 
+project.configureKtlintApplyToIdea()
 allprojects {
+	configureKtlint()
 	repositories {
 		mavenCentral()
 	}
-}
-
-/**
- * Enables com.coditory.manifest plugin for `publish` tasks or if `-PenableManifest` is supplied trough cli
- */
-val enableManifest = with(project) {
-	gradle.startParameter.taskNames.any { s -> s.startsWith("publish") }
-			|| properties.containsKey("enableManifest")
 }
 
 // Subprojects
@@ -39,13 +35,7 @@ subprojects {
 	apply(plugin = "maven-publish")
 	apply(plugin = "io.freefair.lombok")
 	apply(plugin = "me.champeau.jmh")
-
-	if (enableManifest) {
-		apply(plugin = "com.coditory.manifest")
-		project.extensions
-				.getByType(ManifestPluginExtension::class.java)
-				.apply { buildAttributes = false }
-	}
+	apply(plugin = "com.coditory.manifest")
 
 	project.extensions.getByType(LombokExtension::class).apply {
 		version.set("1.18.36")
@@ -189,9 +179,7 @@ subprojects {
 					attributes("Multi-Release" to true)
 				}
 			}
-			if (enableManifest) {
-				manifest.from(File(buildDir, "resources/main/META-INF/MANIFEST.MF"))
-			}
+			manifest.from(layout.buildDirectory.file("resources/main/META-INF/MANIFEST.MF"))
 		}
 
 		// reproducible builds
@@ -209,33 +197,12 @@ subprojects {
 		// compile options
 		withType<JavaCompile> {
 			options.encoding = "UTF-8"
+			options.compilerArgs.add("-Xlint:-options")
 		}
 
 		withType<Javadoc> {
 			options {
 				this as StandardJavadocDocletOptions
-				links(
-						"https://javadoc.io/doc/org.jetbrains/annotations/26.0.2",
-						"https://javadoc.io/doc/commons-configuration/commons-configuration/1.10",
-						"https://javadoc.io/doc/com.bucket4j/bucket4j_jdk8-core/8.10.1",
-						// "https://javadoc.io/doc/com.squareup.okhttp3/okhttp/4.12.0", // blocked by https://github.com/square/okhttp/issues/6450
-						"https://javadoc.io/doc/com.github.philippheuer.events4j/events4j-core/0.12.2",
-						"https://javadoc.io/doc/com.github.philippheuer.events4j/events4j-handler-simple/0.12.2",
-						"https://javadoc.io/doc/com.github.philippheuer.credentialmanager/credentialmanager/0.3.1",
-						"https://javadoc.io/doc/io.github.openfeign/feign-slf4j/13.5",
-						"https://javadoc.io/doc/io.github.openfeign/feign-okhttp/13.5",
-						"https://javadoc.io/doc/io.github.openfeign/feign-jackson/13.5",
-						"https://javadoc.io/doc/io.github.openfeign/feign-hystrix/13.5",
-						"https://javadoc.io/doc/org.slf4j/slf4j-api/2.0.16",
-						"https://javadoc.io/doc/com.neovisionaries/nv-websocket-client/2.14",
-						"https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-databind/2.18.2",
-						"https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-core/2.18.2",
-						"https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-annotations/2.18.2",
-						"https://javadoc.io/doc/commons-io/commons-io/2.18.0",
-						"https://javadoc.io/doc/org.apache.commons/commons-lang3/3.17.0",
-						"https://javadoc.io/doc/org.projectlombok/lombok/1.18.36",
-						"https://twitch4j.github.io/javadoc"
-				)
 				locale = "en"
 
 				// additional javadoc tags
@@ -256,7 +223,7 @@ subprojects {
 				title = "${project.name} (v${project.version})"
 				windowTitle = "${project.name} (v${project.version})"
 				encoding = "UTF-8"
-				overview = "../buildSrc/overview-single.html"
+				overview = file("$rootDir/buildSrc/overview-single.html").absolutePath
 				this as StandardJavadocDocletOptions
 				// hide javadoc warnings (a lot from delombok)
 				addStringOption("Xdoclint:none", "-quiet")
@@ -274,6 +241,7 @@ subprojects {
 			}
 		}
 	}
+	configureDependencyReport()
 }
 
 tasks.register<Javadoc>("aggregateJavadoc") {

@@ -38,8 +38,9 @@ local.properties
 # Gradle
 .gradletasknamecache
 .gradle/
-!gradle/wrapper/*.jar
-gradle.properties
+
+# Kotlin
+.kotlin/
 
 # Modules
 /modules/
@@ -53,3 +54,6 @@ docs/
 # Pipeline
 .dist/*
 .tmp/*
+
+# OS
+.DS_Store

@@ -134,7 +134,7 @@ public class TwitchClient implements ITwitchClient {
     }
 
     /**
-     * Get Extensions
+     * @deprecated Get Extensions
      *
      * @return TwitchExtensions
      */
@@ -161,7 +161,7 @@ public class TwitchClient implements ITwitchClient {
     }
 
     /**
-     * Get Kraken
+     * @deprecated Get Kraken
      *
      * @return TwitchKraken
      */

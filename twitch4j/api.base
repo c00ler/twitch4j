@@ -1,0 +1,244 @@
+// Signature format: 2.0
+package com.github.twitch4j {
+
+  public interface IClientHelper extends java.lang.AutoCloseable {
+    method public default void disableClipEventListener(Iterable<java.lang.String>);
+    method public default boolean disableClipEventListener(String);
+    method public boolean disableClipEventListenerForId(String);
+    method public default void disableFollowEventListener(Iterable<java.lang.String>);
+    method public default void disableFollowEventListener(String);
+    method public boolean disableFollowEventListenerForId(String);
+    method public default void disableStreamEventListener(Iterable<java.lang.String>);
+    method public default void disableStreamEventListener(String);
+    method public boolean disableStreamEventListenerForId(String);
+    method public default java.util.Collection<com.github.twitch4j.helix.domain.User> enableClipEventListener(Iterable<java.lang.String>);
+    method @Nullable public default com.github.twitch4j.helix.domain.User enableClipEventListener(String);
+    method public default boolean enableClipEventListener(String, String);
+    method public boolean enableClipEventListener(String, String, java.time.Instant);
+    method public default java.util.Collection<com.github.twitch4j.helix.domain.User> enableFollowEventListener(Iterable<java.lang.String>);
+    method @Nullable public default com.github.twitch4j.helix.domain.User enableFollowEventListener(String);
+    method public boolean enableFollowEventListener(String, String);
+    method public default java.util.Collection<com.github.twitch4j.helix.domain.User> enableStreamEventListener(Iterable<java.lang.String>);
+    method @Nullable public default com.github.twitch4j.helix.domain.User enableStreamEventListener(String);
+    method public boolean enableStreamEventListener(String, String);
+    method public java.util.Optional<com.github.twitch4j.domain.ChannelCache> getCachedInformation(String);
+    method public com.github.twitch4j.helix.TwitchHelix getTwitchHelix();
+    method public void setThreadDelay(long);
+    method public default void setThreadRate(long);
+  }
+
+  public interface ITwitchClient extends java.lang.AutoCloseable {
+    method public default void close();
+    method public com.github.twitch4j.chat.ITwitchChat getChat();
+    method public com.github.twitch4j.TwitchClientHelper getClientHelper();
+    method public com.github.philippheuer.events4j.core.EventManager getEventManager();
+    method @org.jetbrains.annotations.ApiStatus.Experimental public com.github.twitch4j.eventsub.socket.IEventSubSocket getEventSocket();
+    method @Deprecated public com.github.twitch4j.extensions.TwitchExtensions getExtensions();
+    method @com.github.twitch4j.common.annotation.Unofficial public com.github.twitch4j.graphql.TwitchGraphQL getGraphQL();
+    method public com.github.twitch4j.helix.TwitchHelix getHelix();
+    method @Deprecated public com.github.twitch4j.kraken.TwitchKraken getKraken();
+    method @com.github.twitch4j.common.annotation.Unofficial public com.github.twitch4j.tmi.TwitchMessagingInterface getMessagingInterface();
+    method public com.github.twitch4j.modules.ModuleLoader getModuleLoader();
+    method @Deprecated @org.jetbrains.annotations.ApiStatus.ScheduledForRemoval(inVersion="2.0.0") public com.github.twitch4j.pubsub.ITwitchPubSub getPubSub();
+  }
+
+  public class LocalRun {
+    ctor public LocalRun();
+  }
+
+  @lombok.extern.slf4j.Slf4j public class TwitchClient implements com.github.twitch4j.ITwitchClient {
+    ctor @org.jetbrains.annotations.ApiStatus.Internal public TwitchClient(com.github.philippheuer.events4j.core.EventManager, com.github.twitch4j.extensions.TwitchExtensions, com.github.twitch4j.helix.TwitchHelix, com.github.twitch4j.kraken.TwitchKraken, com.github.twitch4j.tmi.TwitchMessagingInterface, com.github.twitch4j.chat.TwitchChat, com.github.twitch4j.pubsub.TwitchPubSub, com.github.twitch4j.graphql.TwitchGraphQL, com.github.twitch4j.eventsub.socket.IEventSubSocket, java.util.concurrent.ScheduledThreadPoolExecutor, com.github.philippheuer.credentialmanager.CredentialManager, com.github.philippheuer.credentialmanager.domain.OAuth2Credential);
+    method public com.github.twitch4j.chat.TwitchChat getChat();
+    method public com.github.philippheuer.events4j.core.EventManager getEventManager();
+    method public com.github.twitch4j.eventsub.socket.IEventSubSocket getEventSocket();
+    method @Deprecated public com.github.twitch4j.extensions.TwitchExtensions getExtensions();
+    method @com.github.twitch4j.common.annotation.Unofficial public com.github.twitch4j.graphql.TwitchGraphQL getGraphQL();
+    method public com.github.twitch4j.helix.TwitchHelix getHelix();
+    method @Deprecated public com.github.twitch4j.kraken.TwitchKraken getKraken();
+    method @com.github.twitch4j.common.annotation.Unofficial public com.github.twitch4j.tmi.TwitchMessagingInterface getMessagingInterface();
+    method public com.github.twitch4j.pubsub.TwitchPubSub getPubSub();
+  }
+
+  @lombok.AllArgsConstructor(access=lombok.AccessLevel.PRIVATE) @lombok.Getter @lombok.NoArgsConstructor(access=lombok.AccessLevel.PRIVATE) @lombok.extern.slf4j.Slf4j public class TwitchClientBuilder {
+    ctor public TwitchClientBuilder();
+    method public com.github.twitch4j.TwitchClient build();
+    method public static com.github.twitch4j.TwitchClientBuilder builder();
+    method public com.github.twitch4j.TwitchClientBuilder withBotOwnerId(String);
+    method public com.github.twitch4j.TwitchClientBuilder withCommandTrigger(String);
+    method @Deprecated @org.jetbrains.annotations.ApiStatus.ScheduledForRemoval(inVersion="2.0.0") public com.github.twitch4j.TwitchClientBuilder withHelperThreadRate(long);
+    field @lombok.Setter @lombok.experimental.Accessors(chain=true) protected java.util.Collection<java.lang.String> botOwnerIds;
+    field @lombok.With protected io.github.bucket4j.Bandwidth chatAuthLimit;
+    field @lombok.With protected io.github.bucket4j.Bandwidth chatChannelMessageLimit;
+    field @lombok.With protected io.github.bucket4j.Bandwidth chatJoinLimit;
+    field @lombok.With protected Integer chatQueueSize;
+    field @lombok.With protected io.github.bucket4j.Bandwidth chatRateLimit;
+    field @Deprecated @lombok.With protected io.github.bucket4j.Bandwidth[] chatWhisperLimit;
+    field protected java.util.Set<java.lang.String> commandPrefixes;
+  }
+
+  public class TwitchClientHelper implements com.github.twitch4j.IClientHelper {
+    ctor @org.jetbrains.annotations.ApiStatus.Internal public TwitchClientHelper(com.github.twitch4j.helix.TwitchHelix, com.github.philippheuer.events4j.core.EventManager, java.util.concurrent.ScheduledThreadPoolExecutor, com.github.philippheuer.credentialmanager.CredentialManager, com.github.philippheuer.credentialmanager.domain.OAuth2Credential);
+    method public void close();
+    method public boolean disableClipEventListenerForId(String);
+    method public boolean disableFollowEventListenerForId(String);
+    method public boolean disableStreamEventListenerForId(String);
+    method public boolean enableClipEventListener(String, String, java.time.Instant);
+    method public boolean enableFollowEventListener(String, String);
+    method public boolean enableStreamEventListener(String, String);
+    method public java.util.Optional<com.github.twitch4j.domain.ChannelCache> getCachedInformation(String);
+    method public void setThreadDelay(long);
+    field public static final int REQUIRED_THREAD_COUNT = 2; // 0x2
+  }
+
+  @lombok.extern.slf4j.Slf4j public class TwitchClientPool implements com.github.twitch4j.ITwitchClient {
+    ctor @org.jetbrains.annotations.ApiStatus.Internal public TwitchClientPool(com.github.philippheuer.events4j.core.EventManager, com.github.twitch4j.extensions.TwitchExtensions, com.github.twitch4j.helix.TwitchHelix, com.github.twitch4j.kraken.TwitchKraken, com.github.twitch4j.tmi.TwitchMessagingInterface, com.github.twitch4j.chat.ITwitchChat, com.github.twitch4j.pubsub.ITwitchPubSub, com.github.twitch4j.graphql.TwitchGraphQL, com.github.twitch4j.eventsub.socket.IEventSubSocket, java.util.concurrent.ScheduledThreadPoolExecutor, com.github.philippheuer.credentialmanager.CredentialManager, com.github.philippheuer.credentialmanager.domain.OAuth2Credential);
+    method public com.github.twitch4j.chat.ITwitchChat getChat();
+    method public com.github.twitch4j.eventsub.socket.IEventSubSocket getEventSocket();
+    method @Deprecated public com.github.twitch4j.extensions.TwitchExtensions getExtensions();
+    method @com.github.twitch4j.common.annotation.Unofficial public com.github.twitch4j.graphql.TwitchGraphQL getGraphQL();
+    method public com.github.twitch4j.helix.TwitchHelix getHelix();
+    method @Deprecated public com.github.twitch4j.kraken.TwitchKraken getKraken();
+    method @com.github.twitch4j.common.annotation.Unofficial public com.github.twitch4j.tmi.TwitchMessagingInterface getMessagingInterface();
+    method public com.github.twitch4j.pubsub.ITwitchPubSub getPubSub();
+  }
+
+  @lombok.AllArgsConstructor(access=lombok.AccessLevel.PRIVATE) @lombok.Getter @lombok.NoArgsConstructor(access=lombok.AccessLevel.PRIVATE) @lombok.extern.slf4j.Slf4j public class TwitchClientPoolBuilder {
+    ctor public TwitchClientPoolBuilder();
+    method public com.github.twitch4j.TwitchClientPool build();
+    method public static com.github.twitch4j.TwitchClientPoolBuilder builder();
+    method public com.github.twitch4j.TwitchClientPoolBuilder withBotOwnerId(String);
+    method public com.github.twitch4j.TwitchClientPoolBuilder withCommandTrigger(String);
+    method @Deprecated public com.github.twitch4j.TwitchClientPoolBuilder withHelperThreadRate(long);
+    field @lombok.Setter @lombok.experimental.Accessors(chain=true) protected java.util.Collection<java.lang.String> botOwnerIds;
+    field @lombok.With protected io.github.bucket4j.Bandwidth chatAuthLimit;
+    field @lombok.With protected io.github.bucket4j.Bandwidth chatChannelMessageLimit;
+    field @lombok.With protected io.github.bucket4j.Bandwidth chatJoinLimit;
+    field @lombok.With protected Integer chatQueueSize;
+    field @lombok.With protected io.github.bucket4j.Bandwidth chatRateLimit;
+    field @Deprecated @lombok.With protected io.github.bucket4j.Bandwidth[] chatWhisperLimit;
+    field protected java.util.Set<java.lang.String> commandPrefixes;
+  }
+
+  @lombok.extern.slf4j.Slf4j public class TwitchClientTest {
+    ctor public TwitchClientTest();
+    method public void buildCommandPrefix();
+    method public void buildTwitch4J();
+    method public void localTest() throws java.lang.Exception;
+    method public void testScheduledThreadPoolExecutorExternalKeepAlive();
+    method public void testScheduledThreadPoolExecutorShutdown();
+  }
+
+}
+
+package com.github.twitch4j.domain {
+
+  @lombok.AllArgsConstructor @lombok.Data @lombok.NoArgsConstructor public class ChannelCache {
+    ctor public ChannelCache(String);
+  }
+
+}
+
+package com.github.twitch4j.events {
+
+  @lombok.EqualsAndHashCode(callSuper=false) @lombok.Value public class ChannelChangeGameEvent extends com.github.twitch4j.common.events.TwitchEvent {
+    ctor public ChannelChangeGameEvent();
+    method public String getGameId();
+  }
+
+  @lombok.EqualsAndHashCode(callSuper=false) @lombok.Value public class ChannelChangeTitleEvent extends com.github.twitch4j.common.events.TwitchEvent {
+    ctor public ChannelChangeTitleEvent();
+    method public String getTitle();
+  }
+
+  @lombok.EqualsAndHashCode(callSuper=false) @lombok.Value public class ChannelClipCreatedEvent extends com.github.twitch4j.common.events.TwitchEvent {
+    ctor public ChannelClipCreatedEvent();
+    method public java.util.Optional<com.github.twitch4j.common.events.domain.EventUser> getCreatingUser();
+  }
+
+  @lombok.EqualsAndHashCode(callSuper=false) @lombok.Value public class ChannelFollowCountUpdateEvent extends com.github.twitch4j.common.events.TwitchEvent {
+    ctor public ChannelFollowCountUpdateEvent();
+  }
+
+  @lombok.EqualsAndHashCode(callSuper=false) @lombok.Value public class ChannelGoLiveEvent extends com.github.twitch4j.common.events.TwitchEvent {
+    ctor public ChannelGoLiveEvent();
+  }
+
+  @lombok.EqualsAndHashCode(callSuper=false) @lombok.Value public class ChannelGoOfflineEvent extends com.github.twitch4j.common.events.TwitchEvent {
+    ctor public ChannelGoOfflineEvent();
+  }
+
+  @lombok.EqualsAndHashCode(callSuper=false) @lombok.Value public class ChannelViewerCountUpdateEvent extends com.github.twitch4j.common.events.TwitchEvent {
+    ctor public ChannelViewerCountUpdateEvent();
+    method public Integer getViewerCount();
+  }
+
+}
+
+package com.github.twitch4j.internal {
+
+  @lombok.extern.slf4j.Slf4j @org.jetbrains.annotations.ApiStatus.Internal public final class ChatCommandHelixForwarder implements java.util.function.BiPredicate<com.github.twitch4j.chat.TwitchChat,java.lang.String> {
+    ctor public ChatCommandHelixForwarder(com.github.twitch4j.helix.TwitchHelix, com.github.philippheuer.credentialmanager.domain.OAuth2Credential, com.github.twitch4j.auth.providers.TwitchIdentityProvider, java.util.concurrent.ScheduledExecutorService, io.github.bucket4j.Bandwidth);
+    method public boolean test(com.github.twitch4j.chat.TwitchChat, String);
+    field public static final java.time.Instant ENABLE_AFTER;
+  }
+
+}
+
+package com.github.twitch4j.modules {
+
+  public class Configuration {
+    ctor public Configuration();
+    field public static boolean AUTOMATICALLY_ENABLE_MODULES;
+    field public static boolean LOAD_MODULES;
+  }
+
+  @lombok.AllArgsConstructor @lombok.Getter public abstract class IModule {
+    ctor public IModule();
+    method public abstract void disable();
+    method public abstract void enable(com.github.twitch4j.ITwitchClient);
+  }
+
+  public class ModuleException extends java.lang.RuntimeException {
+    ctor public ModuleException(String);
+  }
+
+  @lombok.extern.slf4j.Slf4j public class ModuleLoader {
+    ctor public ModuleLoader(com.github.twitch4j.ITwitchClient);
+    method public void addModule(com.github.twitch4j.modules.IModule);
+    method public void disableModule(String);
+    method public void enableModule(com.github.twitch4j.modules.IModule);
+    method public static void loadExternalModules(java.io.File);
+    method public static void loadExternalModules(java.util.List<java.io.File>);
+    method public void reloadMdoules();
+    method public void removeModule(com.github.twitch4j.modules.IModule);
+    method public void removeModule(String);
+    field public static final String MODULE_DIR = "modules";
+  }
+
+  @lombok.AllArgsConstructor public class ModulePair {
+    ctor public ModulePair();
+  }
+
+}
+
+package com.github.twitch4j.modules.event {
+
+  public class ModuleDisabledEvent extends com.github.philippheuer.events4j.core.domain.Event {
+    ctor public ModuleDisabledEvent(com.github.twitch4j.modules.IModule);
+  }
+
+  public class ModuleEnabledEvent extends com.github.philippheuer.events4j.core.domain.Event {
+    ctor public ModuleEnabledEvent(com.github.twitch4j.modules.IModule);
+  }
+
+}
+
+package com.github.twitch4j.util {
+
+  public class TestUtils {
+    ctor public TestUtils();
+    method public static com.github.philippheuer.credentialmanager.domain.OAuth2Credential getCredential();
+    method public static void sleepFor(Integer);
+  }
+
+}
