@@ -36,6 +36,7 @@ subprojects {
 	apply(plugin = "io.freefair.lombok")
 	apply(plugin = "me.champeau.jmh")
 	apply(plugin = "com.coditory.manifest")
+	println("Subproject ${project.name} manifest extension: ${project.extensions.findByName("manifest")}")
 
 	project.extensions.getByType(LombokExtension::class).apply {
 		version.set("1.18.36")
@@ -204,6 +205,7 @@ subprojects {
 			options {
 				this as StandardJavadocDocletOptions
 				locale = "en"
+				addBooleanOption("notimestamp", true)
 
 				// additional javadoc tags
 				tags = listOf(
@@ -240,6 +242,7 @@ subprojects {
 				excludeTags("integration")
 			}
 		}
+
 	}
 	configureDependencyReport()
 }
@@ -252,6 +255,7 @@ tasks.register<Javadoc>("aggregateJavadoc") {
 		windowTitle = "${rootProject.name} (v${project.version})"
 		encoding = "UTF-8"
 		this as StandardJavadocDocletOptions
+		addBooleanOption("notimestamp", true)
 		overview = file("${rootDir}/buildSrc/overview-general.html").absolutePath
 		group("Common", "com.github.twitch4j.common*")
 		group("Core", "com.github.twitch4j", "com.github.twitch4j.domain*", "com.github.twitch4j.events*", "com.github.twitch4j.modules*")
