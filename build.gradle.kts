@@ -47,6 +47,10 @@ subprojects {
 		fork.set(1)
 	}
 
+	extensions.configure<com.coditory.gradle.manifest.ManifestPluginExtension>("manifest") {
+		buildAttributes = false
+	}
+
 	// Source Compatibility
 	java {
 		sourceCompatibility = JavaVersion.VERSION_1_8
@@ -204,6 +208,7 @@ subprojects {
 			options {
 				this as StandardJavadocDocletOptions
 				locale = "en"
+				addBooleanOption("notimestamp", true)
 
 				// additional javadoc tags
 				tags = listOf(
@@ -265,6 +270,7 @@ tasks.register<Javadoc>("aggregateJavadoc") {
 		group("Extensions API", "com.github.twitch4j.extensions*")
 		group("Kraken API v5 (deprecated)", "com.github.twitch4j.kraken*")
 		addStringOption("Xdoclint:none", "-quiet")
+		addBooleanOption("notimestamp", true)
 		if (JavaVersion.current().isJava9Compatible) {
 			addBooleanOption("html5", true)
 		}
