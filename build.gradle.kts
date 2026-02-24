@@ -47,6 +47,16 @@ subprojects {
 		fork.set(1)
 	}
 
+	afterEvaluate {
+		extensions.findByName("manifest")?.let { m ->
+			try {
+				val buildDate = m.javaClass.getMethod("getBuildDate").invoke(m) as org.gradle.api.provider.Property<String?>
+				buildDate.set(null as String?)
+			} catch (ignored: Exception) {
+			}
+		}
+	}
+
 	// Source Compatibility
 	java {
 		sourceCompatibility = JavaVersion.VERSION_1_8
@@ -204,6 +214,7 @@ subprojects {
 			options {
 				this as StandardJavadocDocletOptions
 				locale = "en"
+				addBooleanOption("notimestamp", true)
 
 				// additional javadoc tags
 				tags = listOf(
@@ -252,6 +263,7 @@ tasks.register<Javadoc>("aggregateJavadoc") {
 		windowTitle = "${rootProject.name} (v${project.version})"
 		encoding = "UTF-8"
 		this as StandardJavadocDocletOptions
+		addBooleanOption("notimestamp", true)
 		overview = file("${rootDir}/buildSrc/overview-general.html").absolutePath
 		group("Common", "com.github.twitch4j.common*")
 		group("Core", "com.github.twitch4j", "com.github.twitch4j.domain*", "com.github.twitch4j.events*", "com.github.twitch4j.modules*")
