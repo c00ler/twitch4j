@@ -35,7 +35,6 @@ subprojects {
 	apply(plugin = "maven-publish")
 	apply(plugin = "io.freefair.lombok")
 	apply(plugin = "me.champeau.jmh")
-	apply(plugin = "com.coditory.manifest")
 
 	project.extensions.getByType(LombokExtension::class).apply {
 		version.set("1.18.36")
@@ -179,7 +178,6 @@ subprojects {
 					attributes("Multi-Release" to true)
 				}
 			}
-			manifest.from(layout.buildDirectory.file("resources/main/META-INF/MANIFEST.MF"))
 		}
 
 		// reproducible builds
