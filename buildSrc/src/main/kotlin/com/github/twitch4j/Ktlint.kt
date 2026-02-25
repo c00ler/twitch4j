@@ -70,10 +70,11 @@ private fun JavaExec.configureCommonKtlintParams(project: Project) {
     classpath = project.getKtlintConfiguration()
     mainClass.set("com.pinterest.ktlint.Main")
     outputs.file(checkstyleOutputFile)
+    workingDir = project.projectDir
     args = listOf(
         "--reporter=plain-summary",
-        "--reporter=checkstyle,output=${checkstyleOutputFile.get()}",
-    ) + ktlintInputFiles.files.map { it.absolutePath }
+        "--reporter=checkstyle,output=${checkstyleOutputFile.get().asFile.toRelativeString(project.projectDir)}",
+    ) + ktlintInputFiles.files.map { it.toRelativeString(project.projectDir) }
 }
 
 private fun Project.getKtlintConfiguration(): Configuration =
