@@ -204,6 +204,7 @@ subprojects {
 			options {
 				this as StandardJavadocDocletOptions
 				locale = "en"
+				addBooleanOption("notimestamp", true)
 
 				// additional javadoc tags
 				tags = listOf(
@@ -227,6 +228,7 @@ subprojects {
 				this as StandardJavadocDocletOptions
 				// hide javadoc warnings (a lot from delombok)
 				addStringOption("Xdoclint:none", "-quiet")
+				addBooleanOption("notimestamp", true)
 				if (JavaVersion.current().isJava9Compatible) {
 					addBooleanOption("html5", true)
 				}
@@ -265,6 +267,7 @@ tasks.register<Javadoc>("aggregateJavadoc") {
 		group("Extensions API", "com.github.twitch4j.extensions*")
 		group("Kraken API v5 (deprecated)", "com.github.twitch4j.kraken*")
 		addStringOption("Xdoclint:none", "-quiet")
+		addBooleanOption("notimestamp", true)
 		if (JavaVersion.current().isJava9Compatible) {
 			addBooleanOption("html5", true)
 		}
