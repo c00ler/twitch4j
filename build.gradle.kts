@@ -21,11 +21,10 @@ group = group
 version = version
 
 project.configureKtlintApplyToIdea()
+// Repository declarations live in settings.gradle.kts via dependencyResolutionManagement,
+// so no repositories block is needed here.
 allprojects {
 	configureKtlint()
-	repositories {
-		mavenCentral()
-	}
 }
 
 // Subprojects
@@ -163,7 +162,7 @@ subprojects {
 	// Source encoding
 	tasks {
 		// jar artifact id and version
-		withType<Jar> {
+		withType<Jar>().configureEach {
 			if (this is ShadowJar) {
 				archiveClassifier.set("shaded")
 				isEnableRelocation = true
@@ -195,12 +194,12 @@ subprojects {
 		}
 
 		// compile options
-		withType<JavaCompile> {
+		withType<JavaCompile>().configureEach {
 			options.encoding = "UTF-8"
 			options.compilerArgs.add("-Xlint:-options")
 		}
 
-		withType<Javadoc> {
+		withType<Javadoc>().configureEach {
 			options {
 				this as StandardJavadocDocletOptions
 				locale = "en"
@@ -239,6 +238,8 @@ subprojects {
 				includeTags("unittest")
 				excludeTags("integration")
 			}
+			// Run test classes in parallel within a module; coerce to ≥1 for single-core machines
+			maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
 		}
 	}
 	configureDependencyReport()
