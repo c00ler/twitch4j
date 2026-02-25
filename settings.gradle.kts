@@ -1,3 +1,9 @@
+buildCache {
+	local {
+		isEnabled = true
+	}
+}
+
 rootProject.name = "Twitch4J"
 
 include(

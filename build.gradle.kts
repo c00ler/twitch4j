@@ -1,5 +1,4 @@
 import com.coditory.gradle.manifest.ManifestPluginExtension
-import me.champeau.jmh.JmhParameters
 
 plugins {
 	`java-library`
@@ -81,18 +80,12 @@ allprojects {
 
 subprojects {
 	apply(plugin = "java-library")
-	apply(plugin = "me.champeau.jmh")
 
 	if (enableManifest) {
 		apply(plugin = "com.coditory.manifest")
 		project.extensions
 				.getByType(ManifestPluginExtension::class.java)
 				.apply { buildAttributes = false }
-	}
-
-	project.extensions.getByType(JmhParameters::class).apply {
-		iterations.set(4)
-		fork.set(1)
 	}
 
 	// Dependency Management for Subprojects
@@ -176,8 +169,12 @@ subprojects {
 		// jar artifact id and version
 		withType<Jar> {
 			if (enableManifest) {
-				manifest.from(File(buildDir, "resources/main/META-INF/MANIFEST.MF"))
+				manifest.from(layout.buildDirectory.file("resources/main/META-INF/MANIFEST.MF"))
 			}
+		}
+
+		withType<Test> {
+			maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
 		}
 
 		withType<Javadoc> {

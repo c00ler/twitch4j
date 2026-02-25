@@ -1,3 +1,12 @@
+plugins {
+	alias(libs.plugins.jmh.plugin)
+}
+
+jmh {
+	iterations.set(4)
+	fork.set(1)
+}
+
 dependencies {
 	// Rate Limiting
 	api(libs.bucket4j.core)
