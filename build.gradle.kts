@@ -37,6 +37,10 @@ subprojects {
 	apply(plugin = "me.champeau.jmh")
 	apply(plugin = "com.coditory.manifest")
 
+	manifest {
+		buildAttributes = false
+	}
+
 	project.extensions.getByType(LombokExtension::class).apply {
 		version.set("1.18.36")
 		disableConfig.set(true)
@@ -204,6 +208,7 @@ subprojects {
 			options {
 				this as StandardJavadocDocletOptions
 				locale = "en"
+				addBooleanOption("notimestamp", true)
 
 				// additional javadoc tags
 				tags = listOf(
@@ -253,6 +258,7 @@ tasks.register<Javadoc>("aggregateJavadoc") {
 		encoding = "UTF-8"
 		this as StandardJavadocDocletOptions
 		overview = file("${rootDir}/buildSrc/overview-general.html").absolutePath
+		addBooleanOption("notimestamp", true)
 		group("Common", "com.github.twitch4j.common*")
 		group("Core", "com.github.twitch4j", "com.github.twitch4j.domain*", "com.github.twitch4j.events*", "com.github.twitch4j.modules*")
 		group("Auth", "com.github.twitch4j.auth*")
