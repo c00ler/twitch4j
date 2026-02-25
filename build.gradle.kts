@@ -37,7 +37,7 @@ subprojects {
 	apply(plugin = "me.champeau.jmh")
 	apply(plugin = "com.coditory.manifest")
 
-	manifest {
+	extensions.configure<com.coditory.gradle.manifest.ManifestPluginExtension>("manifest") {
 		buildAttributes = false
 	}
 
