@@ -1,3 +1,14 @@
+// Centralise repository declarations so every subproject resolves dependencies from the
+// same set of repos without having to repeat `repositories { mavenCentral() }` everywhere.
+// PREFER_SETTINGS silently ignores any project-level repository blocks (e.g. from plugins)
+// instead of failing the build, keeping backward-compatibility with older plugin versions.
+dependencyResolutionManagement {
+	repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+	repositories {
+		mavenCentral()
+	}
+}
+
 rootProject.name = "Twitch4J"
 
 include(
