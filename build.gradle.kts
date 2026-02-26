@@ -211,6 +211,9 @@ subprojects {
 					"implSpec:a:Implementation Requirements:",
 					"implNote:a:Implementation Note:"
 				)
+
+				// suppress generation timestamp so javadoc output is reproducible across runs
+				addBooleanOption("notimestamp", true)
 			}
 		}
 
