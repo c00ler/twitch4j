@@ -70,10 +70,15 @@ private fun JavaExec.configureCommonKtlintParams(project: Project) {
     classpath = project.getKtlintConfiguration()
     mainClass.set("com.pinterest.ktlint.Main")
     outputs.file(checkstyleOutputFile)
+    // Run from the project directory so that relative paths resolve correctly.
+    // Using relative paths in args makes the task relocatable (cache hits across different
+    // checkout locations), since JavaExec tracks args as @Input and absolute paths would
+    // cause cache misses whenever the project is checked out in a different directory.
+    workingDir = project.projectDir
     args = listOf(
         "--reporter=plain-summary",
-        "--reporter=checkstyle,output=${checkstyleOutputFile.get()}",
-    ) + ktlintInputFiles.files.map { it.absolutePath }
+        "--reporter=checkstyle,output=${checkstyleOutputFile.get().asFile.relativeTo(project.projectDir)}",
+    ) + ktlintInputFiles.files.map { it.relativeTo(project.projectDir).path }
 }
 
 private fun Project.getKtlintConfiguration(): Configuration =
