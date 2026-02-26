@@ -37,6 +37,11 @@ subprojects {
 	apply(plugin = "me.champeau.jmh")
 	apply(plugin = "com.coditory.manifest")
 
+	// Disable volatile build attributes (Built-Date etc.) to ensure reproducible builds and cache hits
+	project.extensions.getByType(com.coditory.gradle.manifest.ManifestPluginExtension::class).apply {
+		buildAttributes = false
+	}
+
 	project.extensions.getByType(LombokExtension::class).apply {
 		version.set("1.18.36")
 		disableConfig.set(true)
@@ -223,7 +228,7 @@ subprojects {
 				title = "${project.name} (v${project.version})"
 				windowTitle = "${project.name} (v${project.version})"
 				encoding = "UTF-8"
-				overview = file("$rootDir/buildSrc/overview-single.html").absolutePath
+				overview = rootProject.file("buildSrc/overview-single.html").relativeTo(projectDir).path
 				this as StandardJavadocDocletOptions
 				// hide javadoc warnings (a lot from delombok)
 				addStringOption("Xdoclint:none", "-quiet")
@@ -252,7 +257,7 @@ tasks.register<Javadoc>("aggregateJavadoc") {
 		windowTitle = "${rootProject.name} (v${project.version})"
 		encoding = "UTF-8"
 		this as StandardJavadocDocletOptions
-		overview = file("${rootDir}/buildSrc/overview-general.html").absolutePath
+		overview = rootProject.file("buildSrc/overview-general.html").relativeTo(projectDir).path
 		group("Common", "com.github.twitch4j.common*")
 		group("Core", "com.github.twitch4j", "com.github.twitch4j.domain*", "com.github.twitch4j.events*", "com.github.twitch4j.modules*")
 		group("Auth", "com.github.twitch4j.auth*")
