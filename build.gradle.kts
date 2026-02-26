@@ -11,7 +11,7 @@ plugins {
 	`java-library`
 	`maven-publish`
 	id("io.freefair.lombok").version("8.12.1").apply(false)
-	id("com.coditory.manifest").version("0.2.6").apply(false)
+	id("com.coditory.manifest").version("0.2.6")
 	id("me.champeau.jmh").version("0.7.3").apply(false)
 	id("com.gradleup.shadow").version("8.3.6").apply(false)
 	id("com.github.gmazzo.buildconfig").version("5.5.1").apply(false)
@@ -36,6 +36,10 @@ subprojects {
 	apply(plugin = "io.freefair.lombok")
 	apply(plugin = "me.champeau.jmh")
 	apply(plugin = "com.coditory.manifest")
+
+	extensions.getByName("manifest").let { manifest ->
+		manifest::class.java.getMethod("setBuildAttributes", Boolean::class.javaPrimitiveType).invoke(manifest, false)
+	}
 
 	project.extensions.getByType(LombokExtension::class).apply {
 		version.set("1.18.36")
@@ -204,6 +208,7 @@ subprojects {
 			options {
 				this as StandardJavadocDocletOptions
 				locale = "en"
+				addBooleanOption("notimestamp", true)
 
 				// additional javadoc tags
 				tags = listOf(
@@ -265,6 +270,7 @@ tasks.register<Javadoc>("aggregateJavadoc") {
 		group("Extensions API", "com.github.twitch4j.extensions*")
 		group("Kraken API v5 (deprecated)", "com.github.twitch4j.kraken*")
 		addStringOption("Xdoclint:none", "-quiet")
+		addBooleanOption("notimestamp", true)
 		if (JavaVersion.current().isJava9Compatible) {
 			addBooleanOption("html5", true)
 		}
