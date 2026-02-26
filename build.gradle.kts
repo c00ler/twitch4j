@@ -37,6 +37,17 @@ subprojects {
 	apply(plugin = "me.champeau.jmh")
 	apply(plugin = "com.coditory.manifest")
 
+	extensions.findByName("manifest")?.let { manifest ->
+		try {
+			val buildDate = manifest.javaClass.getMethod("getBuildDate").invoke(manifest) as org.gradle.api.provider.Property<String?>
+			val buildHost = manifest.javaClass.getMethod("getBuildHost").invoke(manifest) as org.gradle.api.provider.Property<String?>
+			buildDate.set(null as String?)
+			buildHost.set(null as String?)
+		} catch (e: Exception) {
+			// ignore if properties are not found
+		}
+	}
+
 	project.extensions.getByType(LombokExtension::class).apply {
 		version.set("1.18.36")
 		disableConfig.set(true)
@@ -204,6 +215,7 @@ subprojects {
 			options {
 				this as StandardJavadocDocletOptions
 				locale = "en"
+				addBooleanOption("notimestamp", true)
 
 				// additional javadoc tags
 				tags = listOf(
@@ -225,6 +237,7 @@ subprojects {
 				encoding = "UTF-8"
 				overview = file("$rootDir/buildSrc/overview-single.html").absolutePath
 				this as StandardJavadocDocletOptions
+				addBooleanOption("notimestamp", true)
 				// hide javadoc warnings (a lot from delombok)
 				addStringOption("Xdoclint:none", "-quiet")
 				if (JavaVersion.current().isJava9Compatible) {
@@ -252,6 +265,7 @@ tasks.register<Javadoc>("aggregateJavadoc") {
 		windowTitle = "${rootProject.name} (v${project.version})"
 		encoding = "UTF-8"
 		this as StandardJavadocDocletOptions
+		addBooleanOption("notimestamp", true)
 		overview = file("${rootDir}/buildSrc/overview-general.html").absolutePath
 		group("Common", "com.github.twitch4j.common*")
 		group("Core", "com.github.twitch4j", "com.github.twitch4j.domain*", "com.github.twitch4j.events*", "com.github.twitch4j.modules*")
