@@ -26,6 +26,9 @@ allprojects {
 	repositories {
 		mavenCentral()
 	}
+	tasks.withType<Javadoc>().configureEach {
+		(options as StandardJavadocDocletOptions).addBooleanOption("notimestamp", true)
+	}
 }
 
 // Subprojects
@@ -45,6 +48,10 @@ subprojects {
 	project.extensions.getByType(JmhParameters::class).apply {
 		iterations.set(4)
 		fork.set(1)
+	}
+
+	extensions.configure<com.coditory.gradle.manifest.ManifestPluginExtension>("manifest") {
+		buildAttributes = false
 	}
 
 	// Source Compatibility
