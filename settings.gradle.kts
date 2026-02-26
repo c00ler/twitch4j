@@ -1,3 +1,28 @@
+// pluginManagement MUST be the first block in the settings file (Gradle requirement).
+// Centralise plugin resolution so Gradle does not hit the network on every
+// build for plugin metadata. Prefer the Portal and Maven Central; avoids
+// individual subprojects declaring their own pluginManagement blocks.
+pluginManagement {
+	repositories {
+		gradlePluginPortal()
+		mavenCentral()
+	}
+}
+
+// Declare ALL dependency-resolution repositories here (Gradle 7+ best practice).
+// Using FAIL_ON_PROJECT_REPOS enforces the rule: no project may silently
+// introduce its own repository, which prevents accidental dependency shadowing
+// and makes the dependency graph fully reproducible.
+//   - mavenCentral: all regular dependencies
+//   - google:       metalava tool (com.android.tools.metalava:metalava)
+dependencyResolutionManagement {
+	repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+	repositories {
+		mavenCentral()
+		google()
+	}
+}
+
 rootProject.name = "Twitch4J"
 
 include(
