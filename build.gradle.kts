@@ -1,3 +1,4 @@
+import com.coditory.gradle.manifest.ManifestPluginExtension
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.twitch4j.configureDependencyReport
 import com.github.twitch4j.configureKtlint
@@ -36,6 +37,13 @@ subprojects {
 	apply(plugin = "io.freefair.lombok")
 	apply(plugin = "me.champeau.jmh")
 	apply(plugin = "com.coditory.manifest")
+
+	// Disable volatile manifest attributes (Built-Date, Built-Host, Built-By) that change on every
+	// build and end up in build/resources/main/META-INF/MANIFEST.MF, which is on the test and
+	// javadoc classpaths, causing those tasks to miss the build cache on every run.
+	extensions.configure<ManifestPluginExtension> {
+		buildAttributes = false
+	}
 
 	project.extensions.getByType(LombokExtension::class).apply {
 		version.set("1.18.36")
