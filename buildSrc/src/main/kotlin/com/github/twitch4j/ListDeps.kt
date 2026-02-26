@@ -61,13 +61,17 @@ fun Project.configureDependencyReport() {
         dependsOn(dependencyReport)
     }
 
-    afterEvaluate {
-        // check task is not available yet, which is why we use afterEvaluate
-        project.tasks.named("check").configure {
-            dependsOn(dependencyReport)
-            dependsOn(dependencyReportRoot)
-        }
-    }
+    // NOTE: dependencyReport and dependencyReportRoot are intentionally NOT wired
+    // into the `check` lifecycle task.
+    //
+    // Previously both tasks were added as dependencies of `check`, which meant
+    // that every verification run – including CI – also triggered dependency
+    // resolution across ALL resolvable configurations for EVERY subproject.
+    // That is expensive (it forces the full dependency graph to be materialised)
+    // and is categorically a *documentation* concern, not a *verification* one.
+    //
+    // Run `./gradlew dependencyReport` (or `dependencyReportRoot`) explicitly
+    // whenever you need a fresh dependency report.
 }
 
 private fun Project.getConfigurationsDependencies(): Map<String, Set<ResolvedDependency>> {

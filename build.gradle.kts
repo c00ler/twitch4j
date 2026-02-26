@@ -21,11 +21,10 @@ group = group
 version = version
 
 project.configureKtlintApplyToIdea()
+// Repositories are declared centrally in settings.gradle.kts via
+// dependencyResolutionManagement, so no per-project repository block is needed.
 allprojects {
 	configureKtlint()
-	repositories {
-		mavenCentral()
-	}
 }
 
 // Subprojects
@@ -163,7 +162,10 @@ subprojects {
 	// Source encoding
 	tasks {
 		// jar artifact id and version
-		withType<Jar> {
+		// configureEach is used throughout to avoid eager task realisation: Gradle
+		// only configures a task when it is actually needed, keeping configuration
+		// time low for large multi-module builds.
+		withType<Jar>().configureEach {
 			if (this is ShadowJar) {
 				archiveClassifier.set("shaded")
 				isEnableRelocation = true
@@ -195,12 +197,12 @@ subprojects {
 		}
 
 		// compile options
-		withType<JavaCompile> {
+		withType<JavaCompile>().configureEach {
 			options.encoding = "UTF-8"
 			options.compilerArgs.add("-Xlint:-options")
 		}
 
-		withType<Javadoc> {
+		withType<Javadoc>().configureEach {
 			options {
 				this as StandardJavadocDocletOptions
 				locale = "en"

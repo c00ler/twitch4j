@@ -4,14 +4,13 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.PathSensitivity
+import org.gradle.process.CommandLineArgumentProvider
 
 val API_BASE_FILE = "api.base"
 
 /**
  * Metalava is a metadata generator intended for JVM type projects.
  * The main users of this tool are Android Platform and AndroidX libraries, however this tool also works on non-Android libraries.
- *
- * Metalava has many features related to API management. Some examples of the most commonly used ones are:
  *
  * Allows extracting the API (into signature text files, into stub API files which in turn get compiled into android.jar,
  * the Android SDK library) and more importantly to hide code intended to be implementation only,
@@ -25,7 +24,9 @@ val API_BASE_FILE = "api.base"
  * More info available at https://android.googlesource.com/platform/tools/metalava/?pli=1#
  */
 fun Project.configureMetalava() {
-    repositories.google()
+    // NOTE: repository declaration removed – google() is now declared centrally
+    // in settings.gradle.kts via dependencyResolutionManagement so that all
+    // projects share a single, authoritative list of dependency repositories.
 
     /**
      * The checkApi task checks the compatibility of the current API with the API base file.
@@ -63,11 +64,21 @@ fun Project.configureMetalava() {
 }
 
 /**
- * Configures common Metalava parameters
+ * Configures common Metalava parameters.
+ *
+ * Previously the compile classpath was resolved eagerly at configuration time
+ * via `configuration.files`, which forced dependency resolution before any task
+ * had been executed and prevented Gradle's incremental-build machinery from
+ * tracking it as a proper task input.
+ *
+ * The fix uses [CommandLineArgumentProvider] so that both the classpath and the
+ * source-file list are computed lazily at task-execution time.  The classpath
+ * configuration is also registered as a formal task input (via
+ * `inputs.files(configurations.named(...))`) so that Gradle can correctly detect
+ * when it has changed and must invalidate the UP-TO-DATE / build-cache result.
  */
 private fun JavaExec.configureCommonMetalavaArgs(project: Project) {
     val jdkHome = org.gradle.internal.jvm.Jvm.current().javaHome.absolutePath
-    val compileClasspath = project.getCompileClasspath()
     val apiFiles = project.fileTree(project.projectDir).also {
         it.include("**/*.kt")
         it.include("**/*.java")
@@ -75,20 +86,27 @@ private fun JavaExec.configureCommonMetalavaArgs(project: Project) {
         it.exclude("**/build/**")
         it.exclude("**/.*/**")
     }
-    inputs.files(apiFiles.files).withPropertyName("apiCheckInputFiles").withPathSensitivity(PathSensitivity.RELATIVE)
+    // Register the file tree lazily (not .files which resolves eagerly).
+    inputs.files(apiFiles).withPropertyName("apiCheckInputFiles").withPathSensitivity(PathSensitivity.RELATIVE)
+    // Declare compileClasspath as a proper task input so Gradle can track it for
+    // UP-TO-DATE checks and build-cache invalidation.
+    inputs.files(project.configurations.named("compileClasspath"))
+        .withPropertyName("compileClasspath")
+        .withPathSensitivity(PathSensitivity.NONE)
     classpath = project.getMetalavaConfiguration()
     mainClass.set("com.android.tools.metalava.Driver")
-    args = listOf(
-        "--jdk-home", jdkHome,
-        "--classpath", compileClasspath,
-        "--source-files",
-    ) + apiFiles.files.map { it.toRelativeString(project.projectDir)  }
+    // Use an argumentProvider so the classpath files are resolved at task-execution
+    // time rather than at configuration time, keeping configuration fast and
+    // compatible with the Gradle build cache.
+    argumentProviders.add(CommandLineArgumentProvider {
+        listOf(
+            "--jdk-home", jdkHome,
+            "--classpath", project.configurations.getByName("compileClasspath").files
+                .joinToString(":") { it.toRelativeString(project.projectDir) },
+            "--source-files",
+        ) + apiFiles.files.map { it.toRelativeString(project.projectDir) }
+    })
 }
-
-private fun Project.getCompileClasspath(): String =
-    configurations.findByName("compileClasspath")!!.files
-        .map { it.toRelativeString(project.projectDir) }
-        .joinToString(":")
 
 private fun Project.getMetalavaConfiguration(): Configuration {
     return configurations.findByName("metalava") ?: configurations.create("metalava") {
