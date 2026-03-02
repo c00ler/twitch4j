@@ -72,8 +72,8 @@ private fun JavaExec.configureCommonKtlintParams(project: Project) {
     outputs.file(checkstyleOutputFile)
     args = listOf(
         "--reporter=plain-summary",
-        "--reporter=checkstyle,output=${checkstyleOutputFile.get()}",
-    ) + ktlintInputFiles.files.map { it.absolutePath }
+        "--reporter=checkstyle,output=${checkstyleOutputFile.get().asFile.relativeTo(project.projectDir)}",
+    ) + ktlintInputFiles.files.map { it.relativeTo(project.projectDir).path }
 }
 
 private fun Project.getKtlintConfiguration(): Configuration =
