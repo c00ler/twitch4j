@@ -26,6 +26,25 @@ allprojects {
 	repositories {
 		mavenCentral()
 	}
+	normalization {
+		runtimeClasspath {
+			metaInf {
+				// Coditory manifest plugin writes volatile build and SCM attributes into MANIFEST.MF.
+				// Exclude them from the cache key so downstream tasks (e.g. javadoc) are not invalidated.
+				ignoreAttribute("Built-By")
+				ignoreAttribute("Built-Host")
+				ignoreAttribute("Built-Date")
+				ignoreAttribute("Built-OS")
+				ignoreAttribute("Built-JDK")
+				ignoreAttribute("SCM-Repository")
+				ignoreAttribute("SCM-Branch")
+				ignoreAttribute("SCM-Commit-Hash")
+				ignoreAttribute("SCM-Commit-Message")
+				ignoreAttribute("SCM-Commit-Author")
+				ignoreAttribute("SCM-Commit-Date")
+			}
+		}
+	}
 }
 
 // Subprojects
@@ -211,6 +230,7 @@ subprojects {
 					"implSpec:a:Implementation Requirements:",
 					"implNote:a:Implementation Note:"
 				)
+				addBooleanOption("notimestamp", true)
 			}
 		}
 
