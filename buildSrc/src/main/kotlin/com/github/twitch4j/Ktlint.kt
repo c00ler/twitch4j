@@ -3,6 +3,7 @@ package com.github.twitch4j
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.PathSensitivity
 
 // This file is mostly ported from AndroidX with minor modifications.
 // https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:buildSrc/src/main/kotlin/androidx/build/Ktlint.kt
@@ -67,13 +68,15 @@ private fun JavaExec.configureCommonKtlintParams(project: Project) {
     }
     val checkstyleOutputFile = project.layout.buildDirectory.file("reports/ktlint/ktlint-checkstyle-report.xml")
     inputs.files(ktlintInputFiles)
+        .withPropertyName("ktlintInputFiles")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
     classpath = project.getKtlintConfiguration()
     mainClass.set("com.pinterest.ktlint.Main")
     outputs.file(checkstyleOutputFile)
     args = listOf(
         "--reporter=plain-summary",
         "--reporter=checkstyle,output=${checkstyleOutputFile.get()}",
-    ) + ktlintInputFiles.files.map { it.absolutePath }
+    ) + ktlintInputFiles.files.sorted().map { project.relativePath(it) }
 }
 
 private fun Project.getKtlintConfiguration(): Configuration =

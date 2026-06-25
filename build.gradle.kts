@@ -3,6 +3,7 @@ import com.github.twitch4j.configureDependencyReport
 import com.github.twitch4j.configureKtlint
 import com.github.twitch4j.configureKtlintApplyToIdea
 import io.freefair.gradle.plugins.lombok.LombokExtension
+import org.gradle.api.tasks.PathSensitivity
 import io.freefair.gradle.plugins.lombok.tasks.Delombok
 import me.champeau.jmh.JmhParameters
 
@@ -160,6 +161,11 @@ subprojects {
 		sign(publishing.publications["main"])
 	}
 
+	configure<com.coditory.gradle.manifest.ManifestPluginExtension> {
+		buildAttributes = false
+		scmAttributes = false
+	}
+
 	// Source encoding
 	tasks {
 		// jar artifact id and version
@@ -219,14 +225,21 @@ subprojects {
 		javadoc {
 			dependsOn(delombok)
 			source(delombok)
+			val overviewFile = rootProject.layout.projectDirectory.file("buildSrc/overview-single.html")
+			inputs.file(overviewFile)
+				.withPropertyName("overviewFile")
+				.withPathSensitivity(PathSensitivity.RELATIVE)
+			doFirst {
+				(options as StandardJavadocDocletOptions).overview = overviewFile.asFile.absolutePath
+			}
 			options {
 				title = "${project.name} (v${project.version})"
 				windowTitle = "${project.name} (v${project.version})"
 				encoding = "UTF-8"
-				overview = file("$rootDir/buildSrc/overview-single.html").absolutePath
 				this as StandardJavadocDocletOptions
 				// hide javadoc warnings (a lot from delombok)
 				addStringOption("Xdoclint:none", "-quiet")
+				addBooleanOption("notimestamp", true)
 				if (JavaVersion.current().isJava9Compatible) {
 					addBooleanOption("html5", true)
 				}
